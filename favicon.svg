@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Pointy-top hexagon, parchment fill, iron-gall outline -->
+  <polygon points="16,3 28,10 28,22 16,29 4,22 4,10"
+           fill="#ede0c4"
+           stroke="#2b1810"
+           stroke-width="2.4"
+           stroke-linejoin="round" />
+  <!-- Inner hex, vermillion — the goal within the labyrinth -->
+  <polygon points="16,11 21,13.5 21,18.5 16,21 11,18.5 11,13.5"
+           fill="#d94f04"
+           stroke="#2b1810"
+           stroke-width="1.2"
+           stroke-linejoin="round" />
+</svg>
