@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Labyrinthus Hexagonalis · A Comparative Study</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Procedural parchment painted to this canvas at boot -->
+  <canvas id="parchment-bg" aria-hidden="true"></canvas>
+
+  <!-- Decorative SVG layer: border, compass rose, sea monsters, sextant -->
+  <div id="marginalia" aria-hidden="true"></div>
+
+  <!-- Title cartouche -->
+  <header class="cartouche">
+    <div class="cartouche-rule"></div>
+    <h1 class="cartouche-title">Labyrinthus Hexagonalis</h1>
+    <p class="cartouche-sub">A Comparative Study of Three Path&#8209;Finding Methods upon a Hexagonal Plane</p>
+    <p class="cartouche-seed">
+      <span class="label">Folio Seed</span>
+      <span id="seed-display">— — — —</span>
+    </p>
+    <div class="cartouche-rule"></div>
+  </header>
+
+  <!-- Stage: starts as single panel, unfolds to triptych -->
+  <main class="stage" id="stage" data-mode="single">
+    <section class="panel panel-left" data-panel="left" data-algo="bfs">
+      <header class="plate">
+        <span class="plate-roman">I</span>
+        <span class="plate-name">Breadth&#8209;First Reconnaissance</span>
+        <span class="plate-complexity" title="Time complexity">O(V + E)</span>
+      </header>
+      <div class="panel-canvas-wrap">
+        <canvas class="panel-canvas" data-role="walls"></canvas>
+        <canvas class="panel-canvas" data-role="state"></canvas>
+      </div>
+      <footer class="plate-stats">
+        <span class="stat"><span class="stat-label">Cells</span><span class="stat-val" data-stat="visited">0</span></span>
+        <span class="stat"><span class="stat-label">Path</span><span class="stat-val" data-stat="path">—</span></span>
+        <span class="stat"><span class="stat-label">Time</span><span class="stat-val" data-stat="time">—</span></span>
+      </footer>
+    </section>
+
+    <section class="panel panel-center" data-panel="center" data-algo="astar">
+      <header class="plate">
+        <span class="plate-roman">II</span>
+        <span class="plate-name">A&#8209;Star Voyage</span>
+        <span class="plate-complexity" title="Time complexity">O(E log V)</span>
+      </header>
+      <div class="panel-canvas-wrap">
+        <canvas class="panel-canvas" data-role="walls"></canvas>
+        <canvas class="panel-canvas" data-role="state"></canvas>
+      </div>
+      <footer class="plate-stats">
+        <span class="stat"><span class="stat-label">Cells</span><span class="stat-val" data-stat="visited">0</span></span>
+        <span class="stat"><span class="stat-label">Path</span><span class="stat-val" data-stat="path">—</span></span>
+        <span class="stat"><span class="stat-label">Time</span><span class="stat-val" data-stat="time">—</span></span>
+      </footer>
+    </section>
+
+    <section class="panel panel-right" data-panel="right" data-algo="dfs">
+      <header class="plate">
+        <span class="plate-roman">III</span>
+        <span class="plate-name">Depth&#8209;First Plunge</span>
+        <span class="plate-complexity" title="Time complexity">O(V + E)</span>
+      </header>
+      <div class="panel-canvas-wrap">
+        <canvas class="panel-canvas" data-role="walls"></canvas>
+        <canvas class="panel-canvas" data-role="state"></canvas>
+      </div>
+      <footer class="plate-stats">
+        <span class="stat"><span class="stat-label">Cells</span><span class="stat-val" data-stat="visited">0</span></span>
+        <span class="stat"><span class="stat-label">Path</span><span class="stat-val" data-stat="path">—</span></span>
+        <span class="stat"><span class="stat-label">Time</span><span class="stat-val" data-stat="time">—</span></span>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Comparison ribbon (revealed after all solvers finish) -->
+  <section class="ribbon" id="ribbon" hidden>
+    <div class="ribbon-curl ribbon-curl-l"></div>
+    <div class="ribbon-curl ribbon-curl-r"></div>
+    <h2 class="ribbon-title">Tally of Expeditions</h2>
+    <div class="ribbon-grid" id="ribbon-grid"><!-- bars injected here --></div>
+  </section>
+
+  <!-- Controls dock -->
+  <footer class="dock">
+    <div class="dock-group">
+      <button class="btn btn-primary" id="btn-generate">
+        <span class="btn-quill">✦</span>
+        <span>Generate Folio</span>
+      </button>
+      <button class="btn btn-seal" id="btn-solve" disabled>
+        <span class="btn-wax">✶</span>
+        <span>Dispatch Expeditions</span>
+      </button>
+    </div>
+
+    <div class="dock-group dock-dials">
+      <label class="dial">
+        <span class="dial-label">Hex Order</span>
+        <input type="range" id="dial-size" min="6" max="14" step="1" value="9" />
+        <span class="dial-val" id="dial-size-val">9</span>
+      </label>
+      <label class="dial">
+        <span class="dial-label">Hourglass</span>
+        <input type="range" id="dial-speed" min="5" max="120" step="1" value="40" />
+        <span class="dial-val" id="dial-speed-val">40/s</span>
+      </label>
+    </div>
+
+    <div class="dock-group">
+      <button class="btn btn-ghost" id="btn-pause" disabled title="Space">Pause</button>
+      <button class="btn btn-ghost" id="btn-step" disabled title="S">Step</button>
+      <button class="btn btn-ghost" id="btn-reset" disabled title="Esc">Reset</button>
+      <button class="btn btn-ghost" id="btn-regenerate" title="R">New Seed</button>
+      <button class="btn btn-ghost" id="btn-export" disabled title="E">Export</button>
+    </div>
+  </footer>
+
+  <!-- Legend -->
+  <aside class="legend" aria-label="Algorithm legend">
+    <span class="legend-item"><span class="swatch swatch-bfs"></span>Iron of Breadth</span>
+    <span class="legend-item"><span class="swatch swatch-astar"></span>Lapis of A&#8209;Star</span>
+    <span class="legend-item"><span class="swatch swatch-dfs"></span>Verdigris of Depth</span>
+  </aside>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
